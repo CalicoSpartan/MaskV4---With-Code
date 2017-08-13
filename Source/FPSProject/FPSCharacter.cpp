@@ -500,6 +500,7 @@ void AFPSCharacter::ServerOnShoot_Implementation()
 
 
 					}
+					CurrentPrimary->ChangeAmmo(CurrentPrimary->TotalAmmo, CurrentPrimary->AmmoLeftInMag - 1);
 					UE_LOG(LogClass, Log, TEXT("IsZoomed? %s"), (IsZoomed ? TEXT("True") : TEXT("False")));
 					if (IsZoomed == true)
 					{

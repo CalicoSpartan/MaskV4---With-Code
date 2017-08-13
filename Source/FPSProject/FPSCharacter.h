@@ -135,7 +135,7 @@ public:
 	UPROPERTY(Replicated, VisibleAnywhere)
 		UCameraComponent* FPSCameraComponent;
 
-	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Weapon")
+	UPROPERTY(Replicated, EditDefaultsOnly,BlueprintReadOnly, Category = "Weapon")
 		class AGun* CurrentPrimary;
 	//TSubclassOf<AGun> CurrentPrimary;
 

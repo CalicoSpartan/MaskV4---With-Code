@@ -10,6 +10,9 @@ AGun::AGun()
 	bReplicates = true;
 	IsExplosive = false;
 	IsProjectile = false;
+	TotalAmmo = 0;
+	AmmoLeftInMag = 0;
+	MagazineSize = 0;
 	//gun doesn't need to tick
 	PrimaryActorTick.bCanEverTick = false;
 	//static mesh actor disables overlap events by default, which we need to re-enable
@@ -27,13 +30,23 @@ void AGun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProp
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AGun, bIsActive);
+	DOREPLIFETIME(AGun, AmmoLeftInMag);
+	DOREPLIFETIME(AGun, TotalAmmo);
+	DOREPLIFETIME(AGun, MagazineSize);
 }
 
 bool AGun::IsActive()
 {
+	
 	return bIsActive;
 }
 
+void AGun::ChangeAmmo_Implementation(int32 Ammo, int32 Mag)
+{
+	AmmoLeftInMag = Mag;
+	TotalAmmo = Ammo;
+	//do something
+}
 
 
 void AGun::SetActive(bool NewWeaponState)
@@ -52,6 +65,7 @@ void AGun::WasCollected_Implementation()
 
 void AGun::DroppedBy(APawn * Pawn)
 {
+	
 	if (Role == ROLE_Authority)
 	{
 		ClientOnDroppedBy(Pawn);

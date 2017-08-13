@@ -52,14 +52,13 @@ public:
 		float RecoilValue;
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 		float ZoomRecoilValue;
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 		int32 TotalAmmo;
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(Replicated,EditAnywhere,BlueprintReadWrite, Category = "Weapon")
 		int32 AmmoLeftInMag;
-	UPROPERTY(EditAnywhere, Category = "Weapon")
+	UPROPERTY(Replicated,EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 		int32 MagazineSize;
-	UPROPERTY(EditAnywhere, Category = "Weapon")
-		int32 NumberOfMagazines;
+
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 		int32 Range;
 	UPROPERTY(EditAnywhere, Category = "Weapon")
@@ -92,7 +91,8 @@ public:
 		virtual void PickedUpBy(APawn* Pawn);
 	UFUNCTION(BlueprintAuthorityOnly, Category = "Weapon")
 		virtual void DroppedBy(APawn* Pawn);
-
+	UFUNCTION(NetMulticast, Reliable)
+		void ChangeAmmo(int32 Ammo, int32 Mag);
 protected:
 
 
