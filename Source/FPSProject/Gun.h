@@ -26,6 +26,8 @@ public:
 		bool IsAutomatic;
 	UPROPERTY(Replicated,EditAnywhere, BlueprintReadOnly,Category = "Weapon")
 		bool CanFire;
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+		bool IsReloading;
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 		float AccuracySpreadIncrease;
 	UPROPERTY(EditAnywhere, Category = "Weapon")
@@ -102,6 +104,8 @@ public:
 		void EndReload();
 	UFUNCTION(NetMulticast,WithValidation, Reliable)
 		void SetCanFire(bool NewCanFire);
+	UFUNCTION(NetMulticast, WithValidation, Reliable)
+		void SetIsReloading(bool NewReloading);
 	UFUNCTION()
 		void ClientStartReload();
 	UFUNCTION()

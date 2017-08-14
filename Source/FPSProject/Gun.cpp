@@ -10,6 +10,7 @@ AGun::AGun()
 	bReplicates = true;
 	IsExplosive = false;
 	CanFire = true;
+	IsReloading = false;
 	IsProjectile = false;
 	TotalAmmo = 0;
 	AmmoLeftInMag = 0;
@@ -35,6 +36,7 @@ void AGun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProp
 	DOREPLIFETIME(AGun, TotalAmmo);
 	DOREPLIFETIME(AGun, MagazineSize);
 	DOREPLIFETIME(AGun, CanFire);
+	DOREPLIFETIME(AGun, IsReloading);
 }
 
 bool AGun::IsActive()
@@ -102,6 +104,16 @@ void AGun::SetCanFire_Implementation(bool NewCanFire)
 {
 	CanFire = NewCanFire;
 }
+bool AGun::SetIsReloading_Validate(bool NewReloading)
+{
+	return true;
+}
+
+
+void AGun::SetIsReloading_Implementation(bool NewReloading)
+{
+	IsReloading = NewReloading;
+}
 
 void AGun::ClientStartReload()
 {
@@ -119,11 +131,18 @@ void AGun::ClientEndReload()
 
 void AGun::StartReload_Implementation()
 {
-
-	SetCanFire(false);
-	GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::EndReload, ReloadTime, false);
-	UE_LOG(LogClass, Log, TEXT("StartedReload"));
-	
+	if (!IsReloading)
+	{
+		if (TotalAmmo > 0) {
+			SetCanFire(false);
+			GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::EndReload, ReloadTime, false);
+			SetIsReloading(true);
+		}
+	}
+	else
+	{
+		UE_LOG(LogClass, Log, TEXT("AlreadyReloading"));
+	}
 }
 void AGun::EndReload_Implementation()
 {
@@ -137,8 +156,32 @@ void AGun::EndReload_Implementation()
 	
 	
 	}
-	ChangeAmmo(TotalAmmo, MagazineSize);
+	if (AmmoLeftInMag > 0)
+	{
+		if (TotalAmmo + AmmoLeftInMag >= MagazineSize)
+		{
+			ChangeAmmo(TotalAmmo + AmmoLeftInMag - MagazineSize, MagazineSize);
+		}
+		else
+		{
+			ChangeAmmo(0, TotalAmmo + AmmoLeftInMag);
+		}
+	}
+	else
+	{
+		if (TotalAmmo >= MagazineSize)
+		{
+			ChangeAmmo(TotalAmmo - MagazineSize, MagazineSize);
+		}
+		else
+		{
+			ChangeAmmo(0, TotalAmmo);
+		}
+	}
+	//ChangeAmmo(TotalAmmo, MagazineSize);
+	SetIsReloading(false);
 	SetCanFire(true);
+	
 	UE_LOG(LogClass, Log, TEXT("EndedReload"));
 	
 }

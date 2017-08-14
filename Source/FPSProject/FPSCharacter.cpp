@@ -519,6 +519,10 @@ void AFPSCharacter::ServerOnShoot_Implementation()
 						}
 					}
 				}
+				if (CurrentPrimary->AmmoLeftInMag <= 0 && CurrentPrimary->TotalAmmo > 0)
+				{
+					ServerReload();
+				}
 			}
 		}
 	}
@@ -748,8 +752,11 @@ void AFPSCharacter::ServerReload_Implementation()
 {
 	if (CurrentPrimary != NULL)
 	{
-		ServerOnStopShoot();
-		CurrentPrimary->StartReload();
+		if (!CurrentPrimary->IsReloading && CurrentPrimary->AmmoLeftInMag != CurrentPrimary->MagazineSize)
+		{
+			ServerOnStopShoot();
+			CurrentPrimary->StartReload();
+		}
 	}
 }
 void AFPSCharacter::MoveForward(float Value)
