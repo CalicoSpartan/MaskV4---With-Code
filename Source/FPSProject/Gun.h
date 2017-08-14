@@ -24,6 +24,8 @@ public:
 		bool IsProjectile;
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 		bool IsAutomatic;
+	UPROPERTY(Replicated,EditAnywhere, BlueprintReadOnly,Category = "Weapon")
+		bool CanFire;
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 		float AccuracySpreadIncrease;
 	UPROPERTY(EditAnywhere, Category = "Weapon")
@@ -52,7 +54,7 @@ public:
 		float RecoilValue;
 	UPROPERTY(EditAnywhere, Category = "Weapon")
 		float ZoomRecoilValue;
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	UPROPERTY(Replicated,EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 		int32 TotalAmmo;
 	UPROPERTY(Replicated,EditAnywhere,BlueprintReadWrite, Category = "Weapon")
 		int32 AmmoLeftInMag;
@@ -79,7 +81,8 @@ public:
 	// returns whether or not the pickup is active
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 		bool IsActive();
-
+	UPROPERTY(VisibleAnywhere)
+		FTimerHandle ReloadTimer;
 	//allows other classes to safely change the pickup's activation state
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 		void SetActive(bool NewWeaponState);
@@ -91,8 +94,18 @@ public:
 		virtual void PickedUpBy(APawn* Pawn);
 	UFUNCTION(BlueprintAuthorityOnly, Category = "Weapon")
 		virtual void DroppedBy(APawn* Pawn);
-	UFUNCTION(NetMulticast, Reliable)
+	UFUNCTION(Server, WithValidation, Reliable)
 		void ChangeAmmo(int32 Ammo, int32 Mag);
+	UFUNCTION(Server, WithValidation, Reliable)
+		void StartReload();
+	UFUNCTION(Server, WithValidation, Reliable)
+		void EndReload();
+	UFUNCTION(NetMulticast,WithValidation, Reliable)
+		void SetCanFire(bool NewCanFire);
+	UFUNCTION()
+		void ClientStartReload();
+	UFUNCTION()
+		void ClientEndReload();
 protected:
 
 

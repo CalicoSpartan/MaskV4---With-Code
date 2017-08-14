@@ -139,7 +139,8 @@ public:
 		class AGun* CurrentPrimary;
 	//TSubclassOf<AGun> CurrentPrimary;
 
-
+	UFUNCTION(Server,WithValidation, Reliable)
+		void ServerReload();
 	// First-person mesh (arms), visible only to the owning player.
 	UPROPERTY(Replicated, VisibleDefaultsOnly, Category = Mesh)
 		USkeletalMeshComponent* FPSMesh;

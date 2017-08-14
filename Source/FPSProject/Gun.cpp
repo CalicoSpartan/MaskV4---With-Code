@@ -9,6 +9,7 @@ AGun::AGun()
 	//tell engine to replicate this actor
 	bReplicates = true;
 	IsExplosive = false;
+	CanFire = true;
 	IsProjectile = false;
 	TotalAmmo = 0;
 	AmmoLeftInMag = 0;
@@ -33,6 +34,7 @@ void AGun::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProp
 	DOREPLIFETIME(AGun, AmmoLeftInMag);
 	DOREPLIFETIME(AGun, TotalAmmo);
 	DOREPLIFETIME(AGun, MagazineSize);
+	DOREPLIFETIME(AGun, CanFire);
 }
 
 bool AGun::IsActive()
@@ -41,10 +43,37 @@ bool AGun::IsActive()
 	return bIsActive;
 }
 
+bool AGun::StartReload_Validate()
+{
+	return true;
+}
+bool AGun::EndReload_Validate()
+{
+	return true;
+}
+
+bool AGun::ChangeAmmo_Validate(int32 Ammo, int32 Mag)
+{
+	return true;
+}
+
 void AGun::ChangeAmmo_Implementation(int32 Ammo, int32 Mag)
 {
+	if (Role == ROLE_Authority)
+	{
+		UE_LOG(LogClass, Log, TEXT("ChangedAmmoFrom - Server"));
+	}
+	else if (Role == ROLE_AutonomousProxy)
+	{
+		UE_LOG(LogClass, Log, TEXT("ChangedAmmoFrom - Owner"));
+	}
+	else
+	{
+		UE_LOG(LogClass, Log, TEXT("ChangedAmmoFrom - Unknown"));
+	}
 	AmmoLeftInMag = Mag;
 	TotalAmmo = Ammo;
+	
 	//do something
 }
 
@@ -63,6 +92,56 @@ void AGun::WasCollected_Implementation()
 	//UE_LOG(LogClass, Log, TEXT("AGun::WasCollected_Implementation %s"), *GetName());
 }
 
+bool AGun::SetCanFire_Validate(bool NewCanFire)
+{
+	return true;
+}
+
+
+void AGun::SetCanFire_Implementation(bool NewCanFire)
+{
+	CanFire = NewCanFire;
+}
+
+void AGun::ClientStartReload()
+{
+	
+
+	
+	
+	//StartReload();
+	
+}
+void AGun::ClientEndReload()
+{
+
+}
+
+void AGun::StartReload_Implementation()
+{
+
+	SetCanFire(false);
+	GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::EndReload, ReloadTime, false);
+	UE_LOG(LogClass, Log, TEXT("StartedReload"));
+	
+}
+void AGun::EndReload_Implementation()
+{
+
+	GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
+	if (Role == ROLE_Authority)
+	{
+		UE_LOG(LogClass, Log, TEXT("SERVER RELOAD"));
+
+	//ClientStartReload();
+	
+	
+	}
+	ChangeAmmo(TotalAmmo, MagazineSize);
+	SetCanFire(true);
+	UE_LOG(LogClass, Log, TEXT("EndedReload"));
+	
+}
 void AGun::DroppedBy(APawn * Pawn)
 {
 	

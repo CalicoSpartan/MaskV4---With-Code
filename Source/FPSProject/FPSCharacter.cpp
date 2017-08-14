@@ -332,7 +332,7 @@ void AFPSCharacter::ServerOnShoot_Implementation()
 				FHitResult hit;
 				FCollisionQueryParams QueryParams;
 				QueryParams.AddIgnoredActor(this);
-				if (CurrentPrimary->AmmoLeftInMag > 0 && IsFiring == false) {
+				if (CurrentPrimary->AmmoLeftInMag > 0 && IsFiring == false && CurrentPrimary->CanFire == true) {
 					if (IsZoomed)
 					{
 						ServerAddGunRecoil(CurrentPrimary->ZoomRecoilValue);
@@ -730,6 +730,7 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("LookUp", this, &AFPSCharacter::AddControllerPitchInput);
 
 	// Set up "action" bindings.
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &AFPSCharacter::ServerReload);
 	PlayerInputComponent->BindAction("Zoom", IE_Pressed, this, &AFPSCharacter::ServerOnZoom);
 	PlayerInputComponent->BindAction("Zoom", IE_Released, this, &AFPSCharacter::ServerOnStopZoom);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AFPSCharacter::StartJump);
@@ -738,8 +739,19 @@ void AFPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &AFPSCharacter::OnShoot);
 	PlayerInputComponent->BindAction("Shoot", IE_Released, this, &AFPSCharacter::OnStopShoot);
 }
+bool AFPSCharacter::ServerReload_Validate()
+{
+	return true;
+}
 
-
+void AFPSCharacter::ServerReload_Implementation()
+{
+	if (CurrentPrimary != NULL)
+	{
+		ServerOnStopShoot();
+		CurrentPrimary->StartReload();
+	}
+}
 void AFPSCharacter::MoveForward(float Value)
 {
 
