@@ -284,6 +284,8 @@ void AFPSGameState::Update()
 
 						if (AFPSPlayerController* FPSController = Cast<AFPSPlayerController>(Player->Shooter->Controller))
 						{
+							//if (AFPSPlayerState* playerstate = Cast<AFPSPlayerState>(FPSController->PlayerState))
+							//{
 							if (FPSController->GetPlayerTeam() != 0)
 							{
 								if (AFPSProjectGameModeBase* GameMode = Cast<AFPSProjectGameModeBase>(GetWorld()->GetAuthGameMode()))
@@ -304,6 +306,7 @@ void AFPSGameState::Update()
 								}
 
 							}
+							//}
 
 
 						}

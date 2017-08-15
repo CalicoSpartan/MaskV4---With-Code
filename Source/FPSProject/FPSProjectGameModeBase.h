@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "FPSGameState.h"
+#include "BaseTeam.h"
 #include "FPSPlayerState.h"
 #include "FPSPlayerStart.h"
 #include "FPSPlayerController.h"
@@ -25,6 +26,8 @@ public:
 		TArray<AFPSPlayerController*> Team1PlayerControllers;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameStats")
 		TArray<AFPSPlayerController*> Team2PlayerControllers;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Teams")
+		TArray<ABaseTeam*> Teams;
 
 	//NEW STUFF////////////////////////////////////////////////////////////////////////////////
 	virtual void StartNewPlayer(APlayerController* NewPlayer);

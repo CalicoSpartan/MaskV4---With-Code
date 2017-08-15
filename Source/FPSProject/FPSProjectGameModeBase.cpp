@@ -321,6 +321,61 @@ void AFPSProjectGameModeBase::StartNewPlayerClient(APlayerController* NewPlayer)
 		UE_LOG(LogClass, Log, TEXT("Team1: %d"), Team1PlayerControllers.Num());
 		UE_LOG(LogClass, Log, TEXT("Team2: %d"), Team2PlayerControllers.Num());
 	}
+	
+	if (Team1PlayerControllers.Num() + Team2PlayerControllers.Num() == GetNumPlayers())
+	{
+		/*
+		UE_LOG(LogClass, Log, TEXT("PUTTERSLOVE"));
+		if (AFPSGameState* MyGameState = Cast<AFPSGameState>(GameState))
+		{
+			if (MyGameState->Team1PlayerControllers.Num() == Team1PlayerControllers.Num() && MyGameState->Team2PlayerControllers.Num() == Team2PlayerControllers.Num())
+			{
+				for (int32 i = 0; i < MyGameState->Team1PlayerStates.Num(); ++i)
+				{
+					if (AFPSPlayerState* PlayerState = Cast<AFPSPlayerState>(MyGameState->Team1PlayerStates[i]))
+					{
+
+						FString newName = "Team1Player[" + FString::FromInt(i) + "]";
+						PlayerState->SetUserNameMultiCast(FName(*newName));
+						UE_LOG(LogClass, Log, TEXT("SetTeam1PlayerName"));
+					}
+					else
+					{
+						UE_LOG(LogClass, Log, TEXT("FailedtoCastTeam1"));
+					}
+
+				}
+				UE_LOG(LogClass, Log, TEXT("there are %d team 2 player states"), MyGameState->Team1PlayerStates.Num());
+				for (int32 i = 0; i < MyGameState->Team2PlayerStates.Num(); ++i)
+				{
+					if (AFPSPlayerState* PlayerState = Cast<AFPSPlayerState>(MyGameState->Team2PlayerStates[i]))
+					{
+
+						FString newName = "Team2Player[" + FString::FromInt(i) + "]";
+						PlayerState->SetUserNameMultiCast(FName(*newName));
+						UE_LOG(LogClass, Log, TEXT("SetTeam2PlayerName"));
+
+					}
+					else
+					{
+						UE_LOG(LogClass, Log, TEXT("FailedtoCastTeam2"));
+					}
+
+				}
+				//MyGameState->Team1PlayerControllers = Team1PlayerControllers;
+				//MyGameState->Team2PlayerControllers = Team2PlayerControllers;
+				UE_LOG(LogClass, Log, TEXT("GameStateUpdated"));
+				for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+				{
+					AFPSPlayerController* PC = Cast<AFPSPlayerController>(*It);
+					PC->AddScoreBoardUI();
+					PC->TriggerAddAliveUI();
+				}
+			}
+		}
+		*/
+	}
+	
 
 }
 
@@ -369,10 +424,19 @@ void AFPSProjectGameModeBase::StartNewPlayer(APlayerController* NewPlayer)
 	else
 	{
 		if (TestPlayerController->GetPlayerTeam() == 1) {
+
 			Team1Players += 1;
 			if (AFPSPlayerState* ps = Cast<AFPSPlayerState>(TestPlayerController->PlayerState))
 			{
 				ps->TeamNumber = 1;
+				if (ABaseTeam* Team1 = Cast<ABaseTeam>(Teams[0]))
+				{
+					//Team1->TeamNumber = 1;
+					Team1->TeamPlayerStates.Add(ps);
+					Team1->TeamColor = FColor::Blue;
+					ps->Team = Team1;
+					UE_LOG(LogClass, Log, TEXT("added to team number 1 player states"));
+				}
 			}
 			Team1PlayerControllers.AddUnique(TestPlayerController);
 			if (AFPSGameState* MyGameState = Cast<AFPSGameState>(GameState))
@@ -384,57 +448,7 @@ void AFPSProjectGameModeBase::StartNewPlayer(APlayerController* NewPlayer)
 				}
 
 			}
-			if (Team1PlayerControllers.Num() + Team2PlayerControllers.Num() == GetNumPlayers())
-			{
-				UE_LOG(LogClass, Log, TEXT("Everyoneassigned"));
-				if (AFPSGameState* MyGameState = Cast<AFPSGameState>(GameState))
-				{
-					if (MyGameState->Team1PlayerControllers.Num() == Team1PlayerControllers.Num() && MyGameState->Team2PlayerControllers.Num() == Team2PlayerControllers.Num())
-					{
-						for (int32 i = 0; i < MyGameState->Team1PlayerStates.Num(); ++i)
-						{
-							if (AFPSPlayerState* PlayerState = Cast<AFPSPlayerState>(MyGameState->Team1PlayerStates[i]))
-							{
-
-								FString newName = "Team1Player[" + FString::FromInt(i) + "]";
-								PlayerState->SetUserNameMultiCast(FName(*newName));
-								UE_LOG(LogClass, Log, TEXT("SetTeam1PlayerName"));
-							}
-							else
-							{
-								UE_LOG(LogClass, Log, TEXT("FailedtoCastTeam1"));
-							}
-
-						}
-						UE_LOG(LogClass, Log, TEXT("there are %d team 2 player states"), MyGameState->Team1PlayerStates.Num());
-						for (int32 i = 0; i < MyGameState->Team2PlayerStates.Num(); ++i)
-						{
-							if (AFPSPlayerState* PlayerState = Cast<AFPSPlayerState>(MyGameState->Team2PlayerStates[i]))
-							{
-
-								FString newName = "Team2Player[" + FString::FromInt(i) + "]";
-								PlayerState->SetUserNameMultiCast(FName(*newName));
-								UE_LOG(LogClass, Log, TEXT("SetTeam2PlayerName"));
-
-							}
-							else
-							{
-								UE_LOG(LogClass, Log, TEXT("FailedtoCastTeam2"));
-							}
-
-						}
-						//MyGameState->Team1PlayerControllers = Team1PlayerControllers;
-						//MyGameState->Team2PlayerControllers = Team2PlayerControllers;
-						UE_LOG(LogClass, Log, TEXT("GameStateUpdated"));
-						for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
-						{
-							AFPSPlayerController* PC = Cast<AFPSPlayerController>(*It);
-							PC->AddScoreBoardUI();
-							PC->TriggerAddAliveUI();
-						}
-					}
-				}
-			}
+			
 			UE_LOG(LogClass, Log, TEXT("Team1PlayerControllerslength: %d"), Team1PlayerControllers.Num());
 			UE_LOG(LogClass, Log, TEXT("Team2PlayerControllerslength: %d"), Team2PlayerControllers.Num());
 
@@ -449,6 +463,14 @@ void AFPSProjectGameModeBase::StartNewPlayer(APlayerController* NewPlayer)
 			if (AFPSPlayerState* ps = Cast<AFPSPlayerState>(TestPlayerController->PlayerState))
 			{
 				ps->TeamNumber = 2;
+				if (ABaseTeam* Team2 = Cast<ABaseTeam>(Teams[1]))
+				{
+					//Team2->TeamNumber = 2;
+					Team2->TeamPlayerStates.Add(ps);
+					Team2->TeamColor = FColor::Red;
+					ps->Team = Team2;
+					UE_LOG(LogClass, Log, TEXT("added to team number 2 player states"));
+				}
 			}
 			Team2PlayerControllers.AddUnique(TestPlayerController);
 			if (AFPSGameState* MyGameState = Cast<AFPSGameState>(GameState))
@@ -459,9 +481,10 @@ void AFPSProjectGameModeBase::StartNewPlayer(APlayerController* NewPlayer)
 					MyGameState->ClientUpdateTeam2PlayerStates(ps);
 				}
 			}
+			/*
 			if (Team1PlayerControllers.Num() + Team2PlayerControllers.Num() == GetNumPlayers())
 			{
-				UE_LOG(LogClass, Log, TEXT("Everyoneassigned"));
+				UE_LOG(LogClass, Log, TEXT("PUTTERSLOVE"));
 				if (AFPSGameState* MyGameState = Cast<AFPSGameState>(GameState))
 				{
 					if (MyGameState->Team1PlayerControllers.Num() == Team1PlayerControllers.Num() && MyGameState->Team2PlayerControllers.Num() == Team2PlayerControllers.Num())
@@ -511,6 +534,7 @@ void AFPSProjectGameModeBase::StartNewPlayer(APlayerController* NewPlayer)
 				}
 
 			}
+			*/
 			UE_LOG(LogClass, Log, TEXT("Team1PlayerControllerslength: %d"), Team1PlayerControllers.Num());
 			UE_LOG(LogClass, Log, TEXT("Team2PlayerControllerslength: %d"), Team2PlayerControllers.Num());
 
@@ -548,41 +572,41 @@ void AFPSProjectGameModeBase::StartNewPlayer(APlayerController* NewPlayer)
 								UE_LOG(LogClass, Log, TEXT("Everyoneassigned"));
 								if (AFPSGameState* MyGameState = Cast<AFPSGameState>(GameState))
 								{
-									/*
+									
 									UE_LOG(LogClass, Log, TEXT("there are %d team 1 player states"),MyGameState->Team1PlayerStates.Num());
 									for (int32 i = 0; i < MyGameState->Team1PlayerStates.Num(); ++i)
-									{
-									if (AFPSPlayerState* PlayerState = Cast<AFPSPlayerState>(MyGameState->Team1PlayerStates[i]))
-									{
+										{
+										if (AFPSPlayerState* PlayerState = Cast<AFPSPlayerState>(MyGameState->Team1PlayerStates[i]))
+										{
 
-									FString newName = "Team1Player[" + FString::FromInt(i) + "]";
-									PlayerState->SetUserNameMultiCast(FName(*newName));
-									UE_LOG(LogClass, Log, TEXT("SetTeam1PlayerName"));
-									}
-									else
-									{
-									UE_LOG(LogClass, Log, TEXT("FailedtoCastTeam1"));
-									}
+											FString newName = "Team1Player[" + FString::FromInt(i) + "]";
+											PlayerState->SetUserNameMultiCast(FName(*newName));
+											UE_LOG(LogClass, Log, TEXT("SetTeam1PlayerName"));
+										}
+										else
+										{
+											UE_LOG(LogClass, Log, TEXT("FailedtoCastTeam1"));
+										}
+
+										}
+										UE_LOG(LogClass, Log, TEXT("there are %d team 2 player states"), MyGameState->Team1PlayerStates.Num());
+										for (int32 i = 0; i < MyGameState->Team2PlayerStates.Num(); ++i)
+										{
+											if (AFPSPlayerState* PlayerState = Cast<AFPSPlayerState>(MyGameState->Team2PlayerStates[i]))
+											{
+
+												FString newName = "Team2Player[" + FString::FromInt(i) + "]";
+												PlayerState->SetUserNameMultiCast(FName(*newName));
+												UE_LOG(LogClass, Log, TEXT("SetTeam2PlayerName"));
+
+											}
+										else
+										{
+											UE_LOG(LogClass, Log, TEXT("FailedtoCastTeam2"));
+										}
 
 									}
-									UE_LOG(LogClass, Log, TEXT("there are %d team 2 player states"), MyGameState->Team1PlayerStates.Num());
-									for (int32 i = 0; i < MyGameState->Team2PlayerStates.Num(); ++i)
-									{
-									if (AFPSPlayerState* PlayerState = Cast<AFPSPlayerState>(MyGameState->Team2PlayerStates[i]))
-									{
-
-									FString newName = "Team2Player[" + FString::FromInt(i) + "]";
-									PlayerState->SetUserNameMultiCast(FName(*newName));
-									UE_LOG(LogClass, Log, TEXT("SetTeam2PlayerName"));
-
-									}
-									else
-									{
-									UE_LOG(LogClass, Log, TEXT("FailedtoCastTeam2"));
-									}
-
-									}
-									*/
+									
 									//MyGameState->Team1PlayerControllers = Team1PlayerControllers;
 									//MyGameState->Team2PlayerControllers = Team2PlayerControllers;
 									UE_LOG(LogClass, Log, TEXT("GameStateUpdated"));
@@ -624,9 +648,10 @@ void AFPSProjectGameModeBase::StartNewPlayer(APlayerController* NewPlayer)
 									MyGameState->ClientUpdateTeam1PlayerStates(ps);
 								}
 							}
+							
 							if (Team1PlayerControllers.Num() + Team2PlayerControllers.Num() == GetNumPlayers())
 							{
-								UE_LOG(LogClass, Log, TEXT("Everyoneassigned"));
+								UE_LOG(LogClass, Log, TEXT("PUTTERSLOVE"));
 								if (AFPSGameState* MyGameState = Cast<AFPSGameState>(GameState))
 								{
 									for (int32 i = 0; i < MyGameState->Team1PlayerStates.Num(); ++i)
@@ -672,6 +697,7 @@ void AFPSProjectGameModeBase::StartNewPlayer(APlayerController* NewPlayer)
 									}
 								}
 							}
+							
 							UE_LOG(LogClass, Log, TEXT("Team1PlayerControllerslength: %d"), Team1PlayerControllers.Num());
 							UE_LOG(LogClass, Log, TEXT("Team2PlayerControllerslength: %d"), Team2PlayerControllers.Num());
 
@@ -744,7 +770,13 @@ void AFPSProjectGameModeBase::BeginPlay()
 
 	//HandleNewState(EGamePlayState::EPlaying);
 
-
+	for (int32 i = 1; i <= NumberOfTeams; ++i)
+	{
+		ABaseTeam* Team = World->SpawnActor<ABaseTeam>(FVector::ZeroVector,FRotator::ZeroRotator);
+		Team->TeamNumber = i;
+		Teams.Add(Team);
+		UE_LOG(LogClass, Log, TEXT("Number of Teams: %d"),Teams.Num());
+	}
 
 	MyGameState->SetNumberOfPlayers(GetNumPlayers());
 

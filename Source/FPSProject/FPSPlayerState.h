@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseTeam.h"
 #include "GameFramework/PlayerState.h"
 #include "FPSPlayerState.generated.h"
 
@@ -42,6 +43,11 @@ public:
 		void SetDeathsMultiCast(int32 delta);
 	UFUNCTION(NetMultiCast, Reliable, Category = "Stats")
 		void SetAssistsMultiCast(int32 delta);
+
+	UPROPERTY(EditAnywhere, Category = "Team")
+		class ABaseTeam* Team;
+
+
 private:
 
 	UPROPERTY(Replicated, VisibleAnywhere, Category = "Stats")
