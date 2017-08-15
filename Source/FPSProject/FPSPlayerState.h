@@ -43,19 +43,22 @@ public:
 		void SetDeathsMultiCast(int32 delta);
 	UFUNCTION(NetMultiCast, Reliable, Category = "Stats")
 		void SetAssistsMultiCast(int32 delta);
+	UFUNCTION(NetMultiCast, Reliable, Category = "Team")
+		void SetTeam(class ABaseTeam* MyTeam);
 
-	UPROPERTY(EditAnywhere, Category = "Team")
+
+	UPROPERTY(Replicated,EditAnywhere, Category = "Team")
 		class ABaseTeam* Team;
 
 
 private:
 
 	UPROPERTY(Replicated, VisibleAnywhere, Category = "Stats")
-		int32 MyScore;
+		int32 MyScore = 0;
 	UPROPERTY(Replicated, VisibleAnywhere, Category = "Stats")
-		int32 Kills;
+		int32 Kills = 0;
 	UPROPERTY(Replicated, VisibleAnywhere, Category = "Stats")
-		int32 Deaths;
+		int32 Deaths = 0;
 	UPROPERTY(Replicated, VisibleAnywhere, Category = "Stats")
-		int32 Assists;
+		int32 Assists = 0;
 };

@@ -18,9 +18,11 @@ public:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 
-
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Players")
 	FColor TeamColor;
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Players")
 	int32 TeamNumber;
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Players")
 	FName TeamName;
 	UFUNCTION(NetMulticast, Reliable, WithValidation)
 	void UpdateTeamOrder(const TArray<AFPSPlayerState*>& NewOrder);

@@ -14,7 +14,14 @@ void AFPSPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(AFPSPlayerState, Kills);
 	DOREPLIFETIME(AFPSPlayerState, Deaths);
 	DOREPLIFETIME(AFPSPlayerState, Assists);
+	DOREPLIFETIME(AFPSPlayerState, Team);
 }
+
+void AFPSPlayerState::SetTeam_Implementation(class ABaseTeam* MyTeam)
+{
+	Team = MyTeam;
+}
+
 void AFPSPlayerState::SetUserNameMultiCast_Implementation(FName NewName)
 {
 	//UserName = "PENIS";

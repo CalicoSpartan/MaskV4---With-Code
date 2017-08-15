@@ -91,6 +91,8 @@ public:
 		TArray<AFPSPlayerStart*> Team4PlayerStarts;
 	UPROPERTY(VisibleAnywhere, Category = "Spawning")
 		TArray<AFPSPlayerStart*> Team5PlayerStarts;
+	UPROPERTY(EditAnywhere, Category = "Teams")
+		TSubclassOf<class ABaseTeam> BaseTeamObj;
 protected:
 	//how many times per second to update the game's UI and State
 

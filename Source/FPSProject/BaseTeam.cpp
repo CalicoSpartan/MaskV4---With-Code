@@ -9,6 +9,7 @@ ABaseTeam::ABaseTeam()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 }
 
@@ -16,6 +17,9 @@ void ABaseTeam::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ABaseTeam, TeamPlayerStates);
+	DOREPLIFETIME(ABaseTeam, TeamColor);
+	DOREPLIFETIME(ABaseTeam, TeamName);
+	DOREPLIFETIME(ABaseTeam, TeamNumber);
 }
 
 bool ABaseTeam::UpdateTeamOrder_Validate(const TArray<AFPSPlayerState*>& NewOrder)

@@ -215,6 +215,7 @@ void AFPSProjectGameModeBase::RespawnPlayer(APlayerController* NewPlayer)
 
 void AFPSProjectGameModeBase::StartNewPlayerClient(APlayerController* NewPlayer)
 {
+	
 	if (AFPSGameState* MyGameState = Cast<AFPSGameState>(GameState))
 	{
 		MyGameState->SetNumberOfPlayers(GetNumPlayers());
@@ -290,6 +291,27 @@ void AFPSProjectGameModeBase::StartNewPlayerClient(APlayerController* NewPlayer)
 	}
 	else
 	{
+		if (TestPlayerController) {
+			if (AFPSPlayerState* ps = Cast<AFPSPlayerState>(TestPlayerController->PlayerState))
+			{
+				if (ps->TeamNumber == 1)
+				{
+					if (ABaseTeam* Team1 = Cast<ABaseTeam>(Teams[0])) {
+						Team1->TeamPlayerStates.Add(ps);
+						ps->SetTeam(Team1);
+					}
+				}
+				if (ps->TeamNumber == 2)
+				{
+					if (ABaseTeam* Team2 = Cast<ABaseTeam>(Teams[1])) {
+						Team2->TeamPlayerStates.Add(ps);
+						ps->SetTeam(Team2);
+					}
+				}
+			}
+		}
+
+
 		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "Player has selected a Team");
 		int32 PlayerStartIndex = FMath::RandRange(0, PreferredStarts.Num() - 1);
 		NewPlayer->SetPawn(SpawnDefaultPawnFor(NewPlayer, PreferredStarts[PlayerStartIndex]));
@@ -383,6 +405,7 @@ void AFPSProjectGameModeBase::StartNewPlayerClient(APlayerController* NewPlayer)
 void AFPSProjectGameModeBase::StartNewPlayer(APlayerController* NewPlayer)
 {
 
+
 	AFPSPlayerController* TestPlayerController = Cast<AFPSPlayerController>(NewPlayer);
 
 	TArray<AFPSPlayerStart*> PreferredStarts;
@@ -434,7 +457,7 @@ void AFPSProjectGameModeBase::StartNewPlayer(APlayerController* NewPlayer)
 					//Team1->TeamNumber = 1;
 					Team1->TeamPlayerStates.Add(ps);
 					Team1->TeamColor = FColor::Blue;
-					ps->Team = Team1;
+					ps->SetTeam(Team1);
 					UE_LOG(LogClass, Log, TEXT("added to team number 1 player states"));
 				}
 			}
@@ -468,7 +491,7 @@ void AFPSProjectGameModeBase::StartNewPlayer(APlayerController* NewPlayer)
 					//Team2->TeamNumber = 2;
 					Team2->TeamPlayerStates.Add(ps);
 					Team2->TeamColor = FColor::Red;
-					ps->Team = Team2;
+					ps->SetTeam(Team2);
 					UE_LOG(LogClass, Log, TEXT("added to team number 2 player states"));
 				}
 			}
@@ -772,10 +795,21 @@ void AFPSProjectGameModeBase::BeginPlay()
 
 	for (int32 i = 1; i <= NumberOfTeams; ++i)
 	{
-		ABaseTeam* Team = World->SpawnActor<ABaseTeam>(FVector::ZeroVector,FRotator::ZeroRotator);
+		ABaseTeam* Team = GetWorld()->SpawnActor<ABaseTeam>(BaseTeamObj, FVector(0, 0, 20), FRotator(0, 0, 0));
 		Team->TeamNumber = i;
+		if (i == 1)
+		{
+			Team->TeamColor = FColor::Blue;
+		}
+		if (i == 2)
+		{
+			Team->TeamColor = FColor::Red;
+		}
 		Teams.Add(Team);
-		UE_LOG(LogClass, Log, TEXT("Number of Teams: %d"),Teams.Num());
+		if (Team)
+		{
+			UE_LOG(LogClass, Log, TEXT("Number of Teams: %d"), Teams.Num());
+		}
 	}
 
 	MyGameState->SetNumberOfPlayers(GetNumPlayers());
